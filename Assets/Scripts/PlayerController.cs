@@ -2,17 +2,21 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour {
 
+
     private float horizontal;
     private float speed = 8f;
     private float jumpingPower = 28f;
     private bool isFacingRight = true;
 
+    [SerializeField] private Animator animator;
     [SerializeField] private Rigidbody2D rb;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     
     void Update() {
         horizontal = Input.GetAxisRaw("Horizontal");
+
+        animator.SetFloat("Speed", Mathf.Abs(horizontal));
 
         if (Input.GetButtonDown("Jump") && IsGrounded()) {
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);

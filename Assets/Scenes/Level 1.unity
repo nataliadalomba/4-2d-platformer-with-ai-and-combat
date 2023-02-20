@@ -5989,6 +5989,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2b5e92a4cb4a82340923403314595b8f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  animator: {fileID: 1724143766}
   rb: {fileID: 1724143765}
   groundCheck: {fileID: 503103148}
   groundLayer:

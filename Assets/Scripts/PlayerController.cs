@@ -34,8 +34,12 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        //if (Jump())
+        //trying to have the run animation play while on slopes
+        if (Jump()) {
             animator.SetFloat("yVelocity", rb.velocity.y);
+        } else {
+            animator.SetFloat("xVelocity", rb.velocity.x);
+        }
         GroundCheck();
         Run();
     }
@@ -46,7 +50,7 @@ public class PlayerController : MonoBehaviour {
     /// </summary>
     private void GroundCheck() {
         isGrounded = false;
-        if (Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer) == true) {
+        if (Physics2D.OverlapCircle(groundCheck.position, 0.5f, groundLayer) == true) {
             isGrounded = true;
         }
         animator.SetBool("Jump", !isGrounded);

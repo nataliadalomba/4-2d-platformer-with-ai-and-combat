@@ -17,7 +17,7 @@ public class PlayerController : MonoBehaviour {
 
     private void Start() {
         speed = 8f;
-        jumpingPower = 28f;
+        jumpingPower = 20f;
         isFacingRight = true;
         isGrounded = true;
 
@@ -29,17 +29,21 @@ public class PlayerController : MonoBehaviour {
         horizontal = Input.GetAxisRaw("Horizontal");
         animator.SetFloat("xVelocity", Mathf.Abs(horizontal));
 
-        IsJumping();
         Flip();
+        Jump();
     }
 
     private void FixedUpdate() {
+        //if (Jump())
+            animator.SetFloat("yVelocity", rb.velocity.y);
         GroundCheck();
-        IsRunning();
-        animator.SetFloat("yVelocity", rb.velocity.y);
+        Run();
     }
 
-    [Tooltip("This is the GroundCheck method.")]
+    /// <summary>
+    /// Checks if the gameObject is grounded. If not grounded, sets the Jump bool in the Animator to true.
+    /// If grounded, sets the Jump bool in the Animator to false.
+    /// </summary>
     private void GroundCheck() {
         isGrounded = false;
         if (Physics2D.OverlapCircle(groundCheck.position, 0.2f, groundLayer) == true) {
@@ -48,28 +52,31 @@ public class PlayerController : MonoBehaviour {
         animator.SetBool("Jump", !isGrounded);
     }
 
-    private void IsRunning() {
-
+    private void Run() {
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-        if((Input.GetKeyDown("left") || Input.GetKeyDown("right")) && isGrounded) {
-            //animator.SetBool("Jump", false);
-            rb.gravityScale = 10f;
+        if((horizontal != 0) && isGrounded) {
+            rb.gravityScale = 20f;
         }
     }
-
-    private void IsJumping() {
+    
+    private bool Jump() {
+        bool isJumping = false;
         if (Input.GetButtonDown("Jump") && isGrounded) {
             isGrounded = false;
-            animator.SetBool("Jump", true);
             rb.gravityScale = 4f;
-            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-        }
-
-        //this allows us to jump higher by pressing the jump button longer, and jump lower by just tapping the jump button
-        if(Input.GetButtonDown("Jump") && rb.velocity.y > 0f) {
-            rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
             animator.SetBool("Jump", true);
+            rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
+            isJumping = true;
+            return isJumping;
+
+            //this allows us to jump higher by pressing the jump button longer, and jump lower by just tapping the jump button
+            //if(Input.GetButtonDown("Jump") && rb.velocity.y > 0f) {
+            //    rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
+            //    animator.SetBool("Jump", true);
+            //}
+            
         }
+        return isJumping;
     }
 
     private void Flip() {

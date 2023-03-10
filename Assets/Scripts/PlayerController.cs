@@ -4,6 +4,7 @@ using UnityEngine.Animations;
 public class PlayerController : MonoBehaviour {
 
     private float horizontal;
+    private float jump;
     private float speed;
     private float jumpingPower;
     private bool isFacingRight;
@@ -23,11 +24,14 @@ public class PlayerController : MonoBehaviour {
 
         animator = GetComponent<Animator>();
         rb = GetComponent<Rigidbody2D>();
+        rb.gravityScale = 7f;
     }
 
     void Update() {
         horizontal = Input.GetAxisRaw("Horizontal");
+        jump = Input.GetAxisRaw("Jump");
         animator.SetFloat("xVelocity", Mathf.Abs(horizontal));
+        animator.SetFloat("yVelocity", jump);
 
         Flip();
         Jump();
@@ -35,12 +39,6 @@ public class PlayerController : MonoBehaviour {
     }
 
     private void FixedUpdate() {
-        //trying to have the run animation play while on slopes
-        if (Jump()) {
-            animator.SetFloat("yVelocity", rb.velocity.y);
-        } else {
-            animator.SetFloat("xVelocity", rb.velocity.x);
-        }
         GroundCheck();
     }
 
@@ -58,28 +56,14 @@ public class PlayerController : MonoBehaviour {
 
     private void Run() {
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-        //if((horizontal != 0) && isGrounded) {
-         //   rb.gravityScale = 20f;
-        //}
     }
     
-    private bool Jump() {
-        bool isJumping = false;
+    private void Jump() {
         if (Input.GetButtonDown("Jump") && isGrounded) {
             isGrounded = false;
-            rb.gravityScale = 7f;
             animator.SetBool("Jump", true);
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
-            isJumping = true;
-            return isJumping;
-
-            //this allows us to jump higher by pressing the jump button longer, and jump lower by just tapping the jump button
-            //if(Input.GetButtonDown("Jump") && rb.velocity.y > 0f) {
-            //    rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y * 0.5f);
-            //    animator.SetBool("Jump", true);
-            //}
         }
-        return isJumping;
     }
 
     private void Flip() {

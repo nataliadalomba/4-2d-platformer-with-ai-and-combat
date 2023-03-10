@@ -27,21 +27,18 @@ public class Player : MonoBehaviour {
 
     void Update() {
         //subtract 1 every real life second
-        if (currentDamageInterval > 0) {
-            //sr.color = Color.white;
+        if (currentDamageInterval > 0)
             currentDamageInterval -= Time.deltaTime;
-        }
+        
         //if the current number in the currentDamageInterval is <= 0 or in other words if
-        //2 seconds delay has passed, take damage
-        if (currentDamageInterval <= 0) {
-            if (Physics2D.OverlapCircle(groundCheck.position, 0.5f, hazardLayer)) {
+        //2 seconds of delay has passed, take damage
+        if (CanTakeDamage())
+            if (Physics2D.OverlapCircle(groundCheck.position, 0.5f, hazardLayer))
                 TakeDamage(1);
-            }
-        }
     }
 
     public bool CanTakeDamage() {
-        return !(currentDamageInterval > 0f);
+        return (currentDamageInterval <= 0);
     }
 
     public void TakeDamage(int damage) {
@@ -53,20 +50,22 @@ public class Player : MonoBehaviour {
             StopCoroutine(damageFlash);
 
         damageFlash = StartCoroutine(DamageFlashing(1f, .1f));
-        int yDamageVelocity = 10;
+        int yDamageVelocity = 15;
         rb.velocity = new Vector2(rb.velocity.x, yDamageVelocity);
         //set currentDamageInterval to start a new cooldown/delay period (2 seconds)
         currentDamageInterval = damageInterval;
-        sr.color = Color.white;
     }
 
-    IEnumerator DamageFlashing(float duration, float intervalTime) {
+    IEnumerator DamageFlashing(float duration, float interval) {
         int index = 0;
-        var wait = new WaitForSeconds(intervalTime);
+        //var is a replacement for WaitForSeconds bc it would be redundant
+        var wait = new WaitForSeconds(interval);
 
-        for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += intervalTime) {
+        for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += interval) {
+            //divides the index by 2 and returns the remainder
             sr.color = colors[index % 2];
             index++;
+            //waits the interval time and then continues the next color in the flashing duration
             yield return wait;
         }
         damageFlash = null;

@@ -13,11 +13,14 @@ public class Player : MonoBehaviour {
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask hazardLayer;
 
+    private Rigidbody2D rb;
     private SpriteRenderer sr;
     private Color[] colors = { Color.red, Color.white };
+    private Coroutine damageFlash;
 
     void Start() {
-        sr = gameObject.GetComponent<SpriteRenderer>();
+        sr = GetComponent<SpriteRenderer>();
+        rb = GetComponent<Rigidbody2D>();
         currentHealth = maxHealth;
         healthBar.SetMaxHealth(maxHealth);
     }
@@ -28,7 +31,9 @@ public class Player : MonoBehaviour {
             //sr.color = Color.white;
             currentDamageInterval -= Time.deltaTime;
         }
-        if(currentDamageInterval <= 0 ) {
+        //if the current number in the currentDamageInterval is <= 0 or in other words if
+        //2 seconds delay has passed, take damage
+        if (currentDamageInterval <= 0) {
             if (Physics2D.OverlapCircle(groundCheck.position, 0.5f, hazardLayer)) {
                 TakeDamage(1);
             }
@@ -40,28 +45,30 @@ public class Player : MonoBehaviour {
     }
 
     public void TakeDamage(int damage) {
-        //if the current number in the currentDamageInterval is <= 0 or in other words if
-        //2 seconds delay has passed, subtract 1 from the healthbar
-        if (currentDamageInterval <= 0) {
-            currentHealth -= damage;
-            healthBar.SetHealth(currentHealth);
-            StartCoroutine(DamageFlashing(1f, .3f));
-            //set currentDamageInterval to start a new cooldown/delay period (2 seconds)
-            currentDamageInterval = damageInterval;
-        }
+        currentHealth -= damage;
+        healthBar.SetHealth(currentHealth);
+
+        //guarantee at most, one coroutine runs at a time
+        if (damageFlash != null)
+            StopCoroutine(damageFlash);
+
+        damageFlash = StartCoroutine(DamageFlashing(1f, .1f));
+        int yDamageVelocity = 10;
+        rb.velocity = new Vector2(rb.velocity.x, yDamageVelocity);
+        //set currentDamageInterval to start a new cooldown/delay period (2 seconds)
+        currentDamageInterval = damageInterval;
         sr.color = Color.white;
     }
 
-    IEnumerator DamageFlashing(float time, float intervalTime) {
-        float elapsedTime = 0f;
+    IEnumerator DamageFlashing(float duration, float intervalTime) {
         int index = 0;
+        var wait = new WaitForSeconds(intervalTime);
 
-        while (elapsedTime < time) {
+        for (float elapsedTime = 0; elapsedTime < duration; elapsedTime += intervalTime) {
             sr.color = colors[index % 2];
-
-            elapsedTime += Time.deltaTime;
             index++;
-            yield return new WaitForSeconds(intervalTime);
+            yield return wait;
         }
+        damageFlash = null;
     }
 }

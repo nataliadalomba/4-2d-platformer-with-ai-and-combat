@@ -31,6 +31,7 @@ public class PlayerController : MonoBehaviour {
 
         Flip();
         Jump();
+        Run();
     }
 
     private void FixedUpdate() {
@@ -41,7 +42,6 @@ public class PlayerController : MonoBehaviour {
             animator.SetFloat("xVelocity", rb.velocity.x);
         }
         GroundCheck();
-        Run();
     }
 
     /// <summary>
@@ -58,16 +58,16 @@ public class PlayerController : MonoBehaviour {
 
     private void Run() {
         rb.velocity = new Vector2(horizontal * speed, rb.velocity.y);
-        if((horizontal != 0) && isGrounded) {
-            rb.gravityScale = 20f;
-        }
+        //if((horizontal != 0) && isGrounded) {
+         //   rb.gravityScale = 20f;
+        //}
     }
     
     private bool Jump() {
         bool isJumping = false;
         if (Input.GetButtonDown("Jump") && isGrounded) {
             isGrounded = false;
-            rb.gravityScale = 4f;
+            rb.gravityScale = 7f;
             animator.SetBool("Jump", true);
             rb.velocity = new Vector2(rb.velocity.x, jumpingPower);
             isJumping = true;

@@ -7,7 +7,7 @@ public class PlayerController : MonoBehaviour {
     private float jump;
     private float speed;
     private float jumpingPower;
-    private bool isFacingRight;
+    public bool isFacingRight;
     private bool isGrounded;
 
     private Animator animator;
@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour {
         animator.SetFloat("xVelocity", Mathf.Abs(horizontal));
         animator.SetFloat("yVelocity", jump);
 
-        Flip();
+        FlipWhileWalking();
         Jump();
         Run();
     }
@@ -66,7 +66,7 @@ public class PlayerController : MonoBehaviour {
         }
     }
 
-    private void Flip() {
+    public void FlipWhileWalking() {
         if (isFacingRight && horizontal < 0f || !isFacingRight && horizontal > 0f) {
             isFacingRight = !isFacingRight;
             GetComponent<SpriteRenderer>().flipX = !isFacingRight;

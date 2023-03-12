@@ -35,6 +35,9 @@ public class Player : MonoBehaviour {
         if (CanTakeDamage())
             if (Physics2D.OverlapCircle(groundCheck.position, 0.5f, hazardLayer))
                 TakeDamage(1);
+
+        if (Input.GetKeyDown(KeyCode.H))
+            TakeDamage(1);
     }
 
     public bool CanTakeDamage() {
